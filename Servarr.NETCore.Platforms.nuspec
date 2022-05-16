@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>Servarr.NETCore.Platforms</id>
+    <title>Servarr.NETCore.Platforms</title>
+    <version>6.0.0</version>
+    <authors>Servarr Team</authors>
+    <description>Define custom RIDs used in Servarr projects</description>
+    <language>en-US</language>
+    <projectUrl>https://github.com/Servarr/Servarr.NETCore.Platforms</projectUrl>
+  </metadata>
+  <files>
+    <file src="runtime.json" target="runtime.json" />
+  </files>
+</package>

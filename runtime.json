@@ -1,0 +1,9 @@
+{
+  "runtimes": {
+    "linux-arm-vfpv3d16": {
+      "#import": [
+        "linux-arm"
+      ]
+    }
+  }
+}

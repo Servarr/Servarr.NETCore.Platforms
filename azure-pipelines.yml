@@ -1,0 +1,49 @@
+variables:
+  majorVersion: '6.0.0'
+  minorVersion: $[counter('minorVersion', 1)]
+  packageVersion: '$(majorVersion).$(minorVersion)'
+
+trigger:
+  branches:
+    include:
+    - main
+
+pr:
+  branches:
+    include:
+    - main
+
+stages:
+  - stage: Setup
+    displayName: Setup
+    jobs:
+      - job:
+        displayName: Build Variables
+        pool:
+          vmImage: 'ubuntu-20.04'
+        steps:
+          # Set the build name properly.  The 'name' property won't recursively expand so hack here:
+          - bash: echo "##vso[build.updatebuildnumber]$PACKAGEVERSION"
+            displayName: Set Build Name
+
+  - stage: Package
+    jobs:
+      - job: Nuget
+        pool:
+          vmImage: 'ubuntu-20.04'
+        steps:
+          - bash: |
+              sed -i'' -e "s/<version>[0-9.*]\+<\/version>/<version>${PACKAGEVERSION}<\/version>/g" Servarr.NETCore.Platforms.nuspec
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'pack'
+              projects: 'Servarr.FFprobe.csproj'
+          - publish: $(Build.ArtifactStagingDirectory)
+            artifact: nuget
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'push'
+              packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+              nuGetFeedType: 'internal'
+              publishVstsFeed: 'Servarr/dotnet-bsd-crossbuild'
+            condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
